@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "fortnite_payout_estimator",
+  "project_id": "a6efaa75-f788-4f57-a11a-5a202b0ecda5"
+}
