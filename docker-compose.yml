@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: island_pulse_db
+    environment:
+      POSTGRES_DB: island_pulse_dev
+      POSTGRES_USER: island_pulse
+      POSTGRES_PASSWORD: island_pulse_dev_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
