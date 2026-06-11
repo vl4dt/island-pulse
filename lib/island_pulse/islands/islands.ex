@@ -9,7 +9,7 @@ defmodule IslandPulse.Islands do
   def get_or_create_island(island_code, attrs \\ %{}) do
     case Repo.get_by(Island, island_code: island_code) do
       %Island{} = island ->
-        {:ok, Island.changeset(island, attrs) |> Repo.update()}
+        Island.changeset(island, attrs) |> Repo.update()
 
       nil ->
         attrs = Map.merge(%{island_code: island_code}, attrs)

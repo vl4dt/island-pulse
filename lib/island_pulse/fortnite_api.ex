@@ -144,7 +144,8 @@ defmodule IslandPulse.FortniteApi do
   end
 
   defp parse_decimal(nil), do: nil
-  defp parse_decimal(val) when is_integer(val) or is_float(val), do: Decimal.new(val)
+  defp parse_decimal(val) when is_integer(val), do: Decimal.new(val)
+  defp parse_decimal(val) when is_float(val), do: Decimal.from_float(val)
 
   defp parse_decimal(val) when is_binary(val) do
     case Decimal.new(val) do

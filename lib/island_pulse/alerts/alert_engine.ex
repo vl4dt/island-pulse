@@ -43,8 +43,8 @@ defmodule IslandPulse.Alerts.AlertEngine do
                       island_id: island.id,
                       severity: severity,
                       metric_name: to_string(field),
-                      value: Decimal.new(latest),
-                      threshold_pct: Decimal.new(abs(pct_change)),
+                      value: decimal_from_value(latest),
+                      threshold_pct: decimal_from_value(abs(pct_change)),
                       direction: direction,
                       sent_at: NaiveDateTime.utc_now()
                     }
@@ -71,8 +71,20 @@ defmodule IslandPulse.Alerts.AlertEngine do
   Save an alert to the database.
   """
   def save_alert(user, alert_map) do
-    changeset = %Alert{user_id: user.id} |> Map.merge(alert_map) |> Alert.changeset(%{})
-    Repo.insert(changeset)
+    # Ensure severity is a string for DB storage
+    severity_str =
+      case alert_map[:severity] do
+        s when is_atom(s) -> Atom.to_string(s)
+        s when is_binary(s) -> s
+      end
+
+    attrs =
+      Map.take(alert_map, [:severity, :metric_name, :value, :threshold_pct, :direction])
+      |> Map.merge(%{severity: severity_str})
+
+    %Alert{user_id: user.id, island_id: alert_map[:island_id]}
+    |> Alert.changeset(attrs)
+    |> Repo.insert()
   end
 
   @doc """
@@ -98,6 +110,14 @@ defmodule IslandPulse.Alerts.AlertEngine do
       d when d >= 15 -> Map.get(config, "forming", %{critical: 35, warning: 20})
       _ -> Map.get(config, "noisy", %{critical: 50, warning: 25})
     end
+  end
+
+  defp decimal_from_value(val) when is_float(val) do
+    Decimal.from_float(val)
+  end
+
+  defp decimal_from_value(val) when is_integer(val) do
+    Decimal.new(val)
   end
 
   defp pct_diff(current, baseline) do
@@ -189,7 +209,7 @@ defmodule IslandPulse.Alerts.AlertEngine do
           [
             %{
               island_id: island.id,
-              severity: "critical",
+              severity: :critical,
               metric_name: "dead_island",
               value: nil,
               threshold_pct: nil,

@@ -12,18 +12,18 @@ defmodule IslandPulse.Metrics do
 
     Repo.insert(changeset,
       conflict_target: [:island_id, :metric_date],
-      on_conflict: [
-        set: [
-          :plays,
-          :unique_players,
-          :minutes_played,
-          :peak_ccu,
-          :favorites,
-          :recommendations,
-          :retention_d1,
-          :retention_d7
-        ]
-      ],
+      on_conflict:
+        {:replace,
+         [
+           :plays,
+           :unique_players,
+           :minutes_played,
+           :peak_ccu,
+           :favorites,
+           :recommendations,
+           :retention_d1,
+           :retention_d7
+         ]},
       prefix: "public"
     )
   end
@@ -36,9 +36,9 @@ defmodule IslandPulse.Metrics do
 
     Repo.insert(changeset,
       conflict_target: [:island_id, :metric_date],
-      on_conflict: [
-        set: [:plays, :unique_players, :minutes_played, :peak_ccu, :favorites, :recommendations]
-      ],
+      on_conflict:
+        {:replace,
+         [:plays, :unique_players, :minutes_played, :peak_ccu, :favorites, :recommendations]},
       prefix: "public"
     )
   end
@@ -51,9 +51,9 @@ defmodule IslandPulse.Metrics do
 
     Repo.insert(changeset,
       conflict_target: [:island_id, :metric_date],
-      on_conflict: [
-        set: [:plays, :unique_players, :minutes_played, :peak_ccu, :favorites, :recommendations]
-      ],
+      on_conflict:
+        {:replace,
+         [:plays, :unique_players, :minutes_played, :peak_ccu, :favorites, :recommendations]},
       prefix: "public"
     )
   end

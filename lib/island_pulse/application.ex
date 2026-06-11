@@ -7,18 +7,21 @@ defmodule IslandPulse.Application do
 
   @impl true
   def start(_type, _args) do
-    children = [
-      IslandPulseWeb.Telemetry,
-      IslandPulse.Repo,
-      {DNSCluster, query: Application.get_env(:island_pulse, :dns_cluster_query) || :ignore},
-      {Phoenix.PubSub, name: IslandPulse.PubSub},
-      # Job queue
-      {Oban, Application.fetch_env!(:island_pulse, Oban)},
-      # Scheduler (only start if configured)
-    ] ++ quantum_child() ++ [
-      # Start to serve requests, typically the last entry
-      IslandPulseWeb.Endpoint
-    ]
+    children =
+      [
+        IslandPulseWeb.Telemetry,
+        IslandPulse.Repo,
+        {DNSCluster, query: Application.get_env(:island_pulse, :dns_cluster_query) || :ignore},
+        {Phoenix.PubSub, name: IslandPulse.PubSub},
+        # Job queue
+        {Oban, Application.fetch_env!(:island_pulse, Oban)}
+        # Scheduler (only start if configured)
+      ] ++
+        quantum_child() ++
+        [
+          # Start to serve requests, typically the last entry
+          IslandPulseWeb.Endpoint
+        ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
