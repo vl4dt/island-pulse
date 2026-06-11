@@ -142,6 +142,20 @@ if config_env() == :prod do
   #
   # Check `Plug.SSL` for all available options in `force_ssl`.
 
+  # ## Oban job queue with crontab
+  config :island_pulse, Oban,
+    engine: Oban.Engines.Basic,
+    repo: IslandPulse.Repo,
+    queues: [default: 5, polling: 5, alerts: 3],
+    crontab: [
+      # Poll all tracked islands every 30 minutes
+      {"*/30 * * * *", IslandPulse.Metrics.PollAllIslandsJob},
+      # Hourly cleanup of old metrics
+      {"0 * * * *", IslandPulse.Metrics.CleanupJob},
+      # Daily summary at configured hour (default 6 PM UTC)
+      {"0 18 * * *", IslandPulse.Telegram.DailySummaryJob}
+    ]
+
   # ## Configuring the mailer
   #
   # In production you need to configure the mailer to use a different adapter.
